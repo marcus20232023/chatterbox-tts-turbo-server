@@ -10,6 +10,26 @@ const audioPlayer = document.getElementById("audioPlayer");
 const downloadBtn = document.getElementById("downloadBtn");
 
 let currentAudioUrl = null;
+let cachedRickSample = null;
+
+function isRickVoice(value) {
+  return value && value.toLowerCase().includes("rick");
+}
+
+async function getRickSampleFile() {
+  if (cachedRickSample) return cachedRickSample;
+
+  const res = await fetch("/api-rick/voices/male_rickmorty/download");
+  if (!res.ok) throw new Error("Failed to download Rick sample");
+
+  const blob = await res.blob();
+  const filename = "male_rickmorty_full.mp3";
+  cachedRickSample = new File([blob], filename, {
+    type: blob.type || "audio/mpeg",
+  });
+
+  return cachedRickSample;
+}
 
 function updateCharCount() {
   const count = textEl.value.length;
@@ -87,8 +107,18 @@ async function generateSpeech() {
       formData.append("voice_name", voiceSelect.value);
     }
 
-    if (voiceFile.files && voiceFile.files[0]) {
-      formData.append("voice_file", voiceFile.files[0]);
+    let uploadFile = voiceFile.files && voiceFile.files[0];
+
+    if (!uploadFile && isRickVoice(voiceSelect.value)) {
+      try {
+        uploadFile = await getRickSampleFile();
+      } catch (err) {
+        console.warn("Rick sample download failed", err);
+      }
+    }
+
+    if (uploadFile) {
+      formData.append("voice_file", uploadFile);
     }
 
     const res = await fetch("/api/audio/speech/upload", {
@@ -127,6 +157,11 @@ exaggeration.addEventListener("input", () => {
 });
 
 generateBtn.addEventListener("click", generateSpeech);
+voiceSelect.addEventListener("change", () => {
+  if (isRickVoice(voiceSelect.value) && !(voiceFile.files && voiceFile.files[0])) {
+    getRickSampleFile().catch(() => {});
+  }
+});
 
 updateCharCount();
 loadVoices();
