@@ -128,5 +128,12 @@ MIT © 2026 Chatterbox‑TTS‑Turbo‑Server Contributors
 
 ## 🙏 Credits
 
+**Model**
+- [ResembleAI/chatterbox-turbo](https://huggingface.co/ResembleAI/chatterbox-turbo)
+
+**Inspired by**
+- [travisvn/chatterbox-tts-api](https://github.com/travisvn/chatterbox-tts-api)
+
+**Additional thanks**
 - [Resemble AI – Chatterbox](https://github.com/resemble-ai/chatterbox)
-- Inspired by [devnen/Chatterbox‑TTS‑Server](https://github.com/devnen/Chatterbox-TTS-Server)
+- [devnen/Chatterbox‑TTS‑Server](https://github.com/devnen/Chatterbox-TTS-Server)
