@@ -79,7 +79,7 @@ async function generateSpeech() {
 
   try {
     const formData = new FormData();
-    formData.append("text", text);
+    formData.append("input", text);
     formData.append("exaggeration", exaggeration.value);
 
     if (voiceSelect.value) {

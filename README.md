@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://lm17s1uz51.ufs.sh/f/EsgO8cDHBTOU5bjcd6giJaPhnlpTZysr24u6k9WGqwIjNgQo" alt="Chatterbox Turbo TTS Server header">
+  <img src="./banner.png" alt="Chatterbox Turbo TTS Server header">
 </p>
 
 # Chatterbox TTS Turbo Server
