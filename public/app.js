@@ -19,7 +19,7 @@ function isRickVoice(value) {
 async function getRickSampleFile() {
   if (cachedRickSample) return cachedRickSample;
 
-  const res = await fetch("/api-rick/voices/male_rickmorty/download");
+  const res = await fetch("/api/voices/male_rickmorty/download");
   if (!res.ok) throw new Error("Failed to download Rick sample");
 
   const blob = await res.blob();
