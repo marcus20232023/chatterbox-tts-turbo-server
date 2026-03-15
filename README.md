@@ -22,6 +22,9 @@
 ## Model
 This project uses [ResembleAI/chatterbox-turbo](https://huggingface.co/ResembleAI/chatterbox-turbo) for text-to-speech generation.
 
+## Inspired By
+This project was inspired by [travisvn/chatterbox-tts-api](https://github.com/travisvn/chatterbox-tts-api).
+
 ## Features
 
 🚀 **Turbo‑focused UI** — Fast, minimal web interface for ChatterTTS Turbo  
