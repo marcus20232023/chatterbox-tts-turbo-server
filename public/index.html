@@ -6,57 +6,162 @@
     <title>Chatterbox TTS Turbo</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body class="theme-dark">
     <div class="page">
       <header class="header">
-        <div class="brand">Chatterbox TTS Turbo</div>
-        <div class="subtitle">Fast text-to-speech with voice cloning</div>
+        <div class="header-left">
+          <div class="brand">Chatterbox TTS Turbo</div>
+          <div class="subtitle">Fast text-to-speech with voice cloning</div>
+        </div>
+        <div class="header-actions">
+          <button id="themeToggle" class="ghost">Toggle theme</button>
+        </div>
       </header>
 
       <main class="card">
-        <section class="field">
-          <label for="text">Text</label>
-          <textarea
-            id="text"
-            maxlength="3000"
-            placeholder="Type or paste text here (max 3000 characters)"
-          ></textarea>
-          <div class="meta">
-            <span id="charCount">0 / 3000</span>
+        <section class="section">
+          <div class="section-title">API Configuration</div>
+          <div class="grid two">
+            <div class="field">
+              <label for="apiBaseUrl">API Base URL</label>
+              <input id="apiBaseUrl" type="text" placeholder="/api or http://localhost:4123/v1" />
+              <div class="helper">Stored locally as chatterbox-api-endpoint</div>
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <button id="apiReset" class="ghost">Reset to default</button>
+            </div>
           </div>
         </section>
 
-        <section class="grid">
+        <section class="section">
+          <div class="section-title">Text Input</div>
           <div class="field">
-            <label for="voiceSelect">Voice Library</label>
-            <select id="voiceSelect">
-              <option value="">Loading voices...</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="voiceFile">Upload Voice (optional)</label>
-            <input id="voiceFile" type="file" accept="audio/*" />
+            <label for="text">Text</label>
+            <textarea
+              id="text"
+              maxlength="15000"
+              placeholder="Enter the text you want to convert to speech..."
+            ></textarea>
+            <div class="meta">
+              <span id="charCount">0 / 15000</span>
+              <button id="clearText" class="ghost">Clear text</button>
+            </div>
+            <div id="longTextNotice" class="notice hidden"></div>
           </div>
         </section>
 
-        <section class="field">
-          <label for="exaggeration">
-            Exaggeration
-            <span class="slider-value" id="exaggerationValue">1.00</span>
-          </label>
-          <input
-            id="exaggeration"
-            type="range"
-            min="0.25"
-            max="2.0"
-            step="0.05"
-            value="1.0"
-          />
+        <section class="section">
+          <div class="section-title">Voice Library</div>
+          <div class="grid two">
+            <div class="field">
+              <label for="voiceSelect">Voices</label>
+              <select id="voiceSelect">
+                <option value="">Loading voices...</option>
+              </select>
+              <div class="row">
+                <button id="refreshVoices" class="ghost">Refresh</button>
+                <button id="setDefaultVoice" class="ghost">Set default</button>
+                <button id="clearDefaultVoice" class="ghost">Clear default</button>
+              </div>
+              <div id="defaultVoiceBadge" class="badge"></div>
+            </div>
+            <div class="field">
+              <label for="voiceFile">Upload Voice (optional)</label>
+              <input id="voiceFile" type="file" accept="audio/*" />
+              <input id="voiceName" type="text" placeholder="Voice name (optional)" />
+              <select id="voiceLanguage">
+                <option value="">Language (optional)</option>
+              </select>
+              <button id="uploadVoice" class="ghost">Upload voice</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Voice Actions</label>
+            <div class="row">
+              <button id="playVoice" class="ghost">Play sample</button>
+              <button id="downloadVoice" class="ghost">Download voice</button>
+              <button id="renameVoice" class="ghost">Rename voice</button>
+              <button id="deleteVoice" class="ghost danger">Delete voice</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Aliases</label>
+            <div class="row">
+              <input id="aliasInput" type="text" placeholder="Add alias" />
+              <button id="addAlias" class="ghost">Add alias</button>
+            </div>
+            <div id="aliasList" class="tag-list"></div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">Streaming</div>
+          <div class="grid two">
+            <div class="field">
+              <label class="inline">
+                <input id="streamingToggle" type="checkbox" />
+                Enable streaming for real-time audio
+              </label>
+              <div id="streamingStatus" class="helper">Streaming disabled</div>
+            </div>
+            <div class="field">
+              <label for="streamingFormat">Streaming format</label>
+              <select id="streamingFormat">
+                <option value="sse">SSE</option>
+                <option value="stream">Raw stream</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="streamingChunkSize">Streaming chunk size</label>
+              <input id="streamingChunkSize" type="number" min="1024" step="1024" placeholder="Optional" />
+            </div>
+            <div class="field">
+              <label for="streamingStrategy">Streaming strategy</label>
+              <input id="streamingStrategy" type="text" placeholder="auto / low_latency / balanced" />
+            </div>
+            <div class="field">
+              <label for="streamingQuality">Streaming quality</label>
+              <input id="streamingQuality" type="text" placeholder="auto / high / low" />
+            </div>
+            <div class="field">
+              <label for="outputFormat">Output format</label>
+              <select id="outputFormat">
+                <option value="mp3">MP3</option>
+                <option value="wav">WAV</option>
+                <option value="flac">FLAC</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">Advanced Settings</div>
+          <div class="grid three">
+            <div class="field">
+              <label for="exaggeration">
+                Exaggeration <span class="slider-value" id="exaggerationValue">0.50</span>
+              </label>
+              <input id="exaggeration" type="range" min="0" max="2" step="0.05" value="0.5" />
+            </div>
+            <div class="field">
+              <label for="cfgWeight">
+                CFG Weight <span class="slider-value" id="cfgWeightValue">0.50</span>
+              </label>
+              <input id="cfgWeight" type="range" min="0" max="2" step="0.05" value="0.5" />
+            </div>
+            <div class="field">
+              <label for="temperature">
+                Temperature <span class="slider-value" id="temperatureValue">0.80</span>
+              </label>
+              <input id="temperature" type="range" min="0" max="2" step="0.05" value="0.8" />
+            </div>
+          </div>
+          <button id="resetAdvanced" class="ghost">Reset to defaults</button>
         </section>
 
         <section class="actions">
-          <button id="generateBtn" class="primary">Generate</button>
+          <button id="generateBtn" class="primary">Generate Speech</button>
           <span id="status" class="status"></span>
         </section>
 
@@ -65,6 +170,12 @@
           <a id="downloadBtn" class="download" href="#" download="chattertts.wav" disabled>
             Download Audio
           </a>
+        </section>
+
+        <section class="section">
+          <div class="section-title">History</div>
+          <div id="historyList" class="history"></div>
+          <button id="clearHistory" class="ghost">Clear history</button>
         </section>
       </main>
 
