@@ -1,0 +1,16 @@
+{
+  "name": "chatterbox-tts-turbo-server",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "description": "OpenAI-compatible web UI + reverse proxy for ChatterTTS Turbo",
+  "main": "server.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "http-proxy-middleware": "^3.0.2"
+  }
+}

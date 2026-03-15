@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChatterTTS Turbo</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <div class="brand">ChatterTTS Turbo</div>
+        <div class="subtitle">Fast text-to-speech with voice cloning</div>
+      </header>
+
+      <main class="card">
+        <section class="field">
+          <label for="text">Text</label>
+          <textarea
+            id="text"
+            maxlength="3000"
+            placeholder="Type or paste text here (max 3000 characters)"
+          ></textarea>
+          <div class="meta">
+            <span id="charCount">0 / 3000</span>
+          </div>
+        </section>
+
+        <section class="grid">
+          <div class="field">
+            <label for="voiceSelect">Voice Library</label>
+            <select id="voiceSelect">
+              <option value="">Loading voices...</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="voiceFile">Upload Voice (optional)</label>
+            <input id="voiceFile" type="file" accept="audio/*" />
+          </div>
+        </section>
+
+        <section class="field">
+          <label for="exaggeration">
+            Exaggeration
+            <span class="slider-value" id="exaggerationValue">1.00</span>
+          </label>
+          <input
+            id="exaggeration"
+            type="range"
+            min="0.25"
+            max="2.0"
+            step="0.05"
+            value="1.0"
+          />
+        </section>
+
+        <section class="actions">
+          <button id="generateBtn" class="primary">Generate</button>
+          <span id="status" class="status"></span>
+        </section>
+
+        <section class="output">
+          <audio id="audioPlayer" controls></audio>
+          <a id="downloadBtn" class="download" href="#" download="chattertts.wav" disabled>
+            Download Audio
+          </a>
+        </section>
+      </main>
+
+      <footer class="footer">Powered by ChatterTTS Turbo API</footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
