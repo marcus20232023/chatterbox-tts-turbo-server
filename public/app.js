@@ -80,6 +80,20 @@ function setStatus(message) {
   statusEl.textContent = message || "";
 }
 
+function getErrorMessage(err, fallback = "Something went wrong") {
+  if (!err) return fallback;
+  if (typeof err === "string") return err;
+  if (err instanceof Error && err.message) return err.message;
+  if (typeof err.message === "string") return err.message;
+  if (err.detail) return getErrorMessage(err.detail, fallback);
+  if (err.error) return getErrorMessage(err.error, fallback);
+  try {
+    return JSON.stringify(err);
+  } catch (_) {
+    return fallback;
+  }
+}
+
 function updateCharCount() {
   const count = textEl.value.length;
   charCountEl.textContent = `${count} / 15000`;
@@ -529,7 +543,7 @@ async function generateSpeech() {
       let errorText = `Request failed (${res.status})`;
       try {
         const errJson = await res.json();
-        errorText = errJson?.detail || errJson?.error || errorText;
+        errorText = getErrorMessage(errJson, errorText);
       } catch (_) {}
       throw new Error(errorText);
     }
@@ -551,7 +565,7 @@ async function generateSpeech() {
 
     setStatus(streamingToggle.checked ? "Done (streaming enabled)" : "Done");
   } catch (err) {
-    setStatus(err.message || "Failed to generate audio");
+    setStatus(getErrorMessage(err, "Failed to generate audio"));
   } finally {
     generateBtn.disabled = false;
   }
