@@ -19,6 +19,9 @@
 
 **Node/Express** web UI + reverse proxy for **ChatterTTS Turbo**. This lightweight server provides a clean web interface for text‑to‑speech generation and proxies requests to a running Turbo backend (no CORS issues, no extra setup).
 
+## Model
+This project uses [ResembleAI/chatterbox-turbo](https://huggingface.co/ResembleAI/chatterbox-turbo) for text-to-speech generation.
+
 ## Features
 
 🚀 **Turbo‑focused UI** — Fast, minimal web interface for ChatterTTS Turbo  
@@ -115,13 +118,6 @@ server.js        # Express server + proxy
 start.sh         # One‑shot install + run (Linux/macOS)
 package.json     # Dependencies and scripts
 ```
-
-## Support
-
-- 🐛 **Issues**: Open a GitHub issue
-- 💬 **Discord**: [Join the community](http://chatterboxtts.com/discord)
-
----
 
 ## 📄 License
 
