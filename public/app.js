@@ -181,14 +181,15 @@ function isRickVoice(value) {
   return value && value.toLowerCase().includes("rick");
 }
 
-async function getRickSampleFile() {
+async function getRickSampleFile(voiceName) {
   if (cachedRickSample) return cachedRickSample;
 
-  const res = await apiFetch("/voices/male_rickmorty/download");
+  const safeName = encodeURIComponent(voiceName || "");
+  const res = await apiFetch(`/voices/${safeName}/download`);
   if (!res.ok) throw new Error("Failed to download Rick sample");
 
   const blob = await res.blob();
-  const filename = "male_rickmorty_full.mp3";
+  const filename = `${voiceName || "rick"}_sample${blob.type && blob.type.includes("mpeg") ? ".mp3" : ".wav"}`;
   cachedRickSample = new File([blob], filename, {
     type: blob.type || "audio/mpeg",
   });
@@ -504,7 +505,7 @@ async function generateSpeech() {
 
     if (!uploadFile && isRickVoice(voiceSelect.value)) {
       try {
-        uploadFile = await getRickSampleFile();
+        uploadFile = await getRickSampleFile(voiceSelect.value);
       } catch (err) {
         console.warn("Rick sample download failed", err);
       }
@@ -614,7 +615,7 @@ addAliasBtn.addEventListener("click", addAlias);
 
 voiceSelect.addEventListener("change", () => {
   if (isRickVoice(voiceSelect.value) && !(voiceFile.files && voiceFile.files[0])) {
-    getRickSampleFile().catch(() => {});
+    getRickSampleFile(voiceSelect.value).catch(() => {});
   }
   loadAliases();
 });
