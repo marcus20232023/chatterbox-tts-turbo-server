@@ -51,7 +51,6 @@ const ADVANCED_KEY = "chatterbox-advanced-settings";
 const DEFAULT_VOICE_KEY = "chatterbox-default-voice";
 
 let currentAudioUrl = null;
-let cachedRickSample = null;
 let historyItems = [];
 let defaultVoice = null;
 
@@ -175,26 +174,6 @@ function updateStreamingStatus() {
   streamingStatus.textContent = streamingToggle.checked
     ? `Streaming enabled (${streamingFormat.value})`
     : "Streaming disabled";
-}
-
-function isRickVoice(value) {
-  return value && value.toLowerCase().includes("rick");
-}
-
-async function getRickSampleFile(voiceName) {
-  if (cachedRickSample) return cachedRickSample;
-
-  const safeName = encodeURIComponent(voiceName || "");
-  const res = await apiFetch(`/voices/${safeName}/download`);
-  if (!res.ok) throw new Error("Failed to download Rick sample");
-
-  const blob = await res.blob();
-  const filename = `${voiceName || "rick"}_sample${blob.type && blob.type.includes("mpeg") ? ".mp3" : ".wav"}`;
-  cachedRickSample = new File([blob], filename, {
-    type: blob.type || "audio/mpeg",
-  });
-
-  return cachedRickSample;
 }
 
 async function loadLanguages() {
@@ -475,50 +454,76 @@ async function generateSpeech() {
   }
 
   try {
-    const formData = new FormData();
-    formData.append("input", text);
-    formData.append("exaggeration", exaggeration.value);
-    formData.append("cfg_weight", cfgWeight.value);
-    formData.append("temperature", temperature.value);
+    const uploadFile = voiceFile.files && voiceFile.files[0];
 
-    if (outputFormat.value) {
-      formData.append("output_format", outputFormat.value);
-      formData.append("response_format", outputFormat.value);
-    }
-
-    if (streamingChunkSize.value) {
-      formData.append("streaming_chunk_size", streamingChunkSize.value);
-    }
-    if (streamingStrategy.value) {
-      formData.append("streaming_strategy", streamingStrategy.value);
-    }
-    if (streamingQuality.value) {
-      formData.append("streaming_quality", streamingQuality.value);
-    }
-
-    if (voiceSelect.value) {
-      formData.append("voice", voiceSelect.value);
-      formData.append("voice_name", voiceSelect.value);
-    }
-
-    let uploadFile = voiceFile.files && voiceFile.files[0];
-
-    if (!uploadFile && isRickVoice(voiceSelect.value)) {
-      try {
-        uploadFile = await getRickSampleFile(voiceSelect.value);
-      } catch (err) {
-        console.warn("Rick sample download failed", err);
-      }
-    }
+    let res;
 
     if (uploadFile) {
-      formData.append("voice_file", uploadFile);
-    }
+      const formData = new FormData();
+      formData.append("input", text);
+      formData.append("exaggeration", exaggeration.value);
+      formData.append("cfg_weight", cfgWeight.value);
+      formData.append("temperature", temperature.value);
 
-    const res = await apiFetch("/audio/speech/upload", {
-      method: "POST",
-      body: formData,
-    });
+      if (outputFormat.value) {
+        formData.append("output_format", outputFormat.value);
+        formData.append("response_format", outputFormat.value);
+      }
+
+      if (streamingChunkSize.value) {
+        formData.append("streaming_chunk_size", streamingChunkSize.value);
+      }
+      if (streamingStrategy.value) {
+        formData.append("streaming_strategy", streamingStrategy.value);
+      }
+      if (streamingQuality.value) {
+        formData.append("streaming_quality", streamingQuality.value);
+      }
+
+      if (voiceSelect.value) {
+        formData.append("voice", voiceSelect.value);
+        formData.append("voice_name", voiceSelect.value);
+      }
+
+      formData.append("voice_file", uploadFile);
+
+      res = await apiFetch("/audio/speech/upload", {
+        method: "POST",
+        body: formData,
+      });
+    } else {
+      const payload = {
+        input: text,
+        exaggeration: Number(exaggeration.value),
+        cfg_weight: Number(cfgWeight.value),
+        temperature: Number(temperature.value),
+      };
+
+      if (outputFormat.value) {
+        payload.output_format = outputFormat.value;
+        payload.response_format = outputFormat.value;
+      }
+
+      if (streamingChunkSize.value) {
+        payload.streaming_chunk_size = Number(streamingChunkSize.value);
+      }
+      if (streamingStrategy.value) {
+        payload.streaming_strategy = streamingStrategy.value;
+      }
+      if (streamingQuality.value) {
+        payload.streaming_quality = streamingQuality.value;
+      }
+
+      if (voiceSelect.value) {
+        payload.voice = voiceSelect.value;
+      }
+
+      res = await apiFetch("/audio/speech", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    }
 
     if (!res.ok) {
       let errorText = `Request failed (${res.status})`;
@@ -614,9 +619,6 @@ deleteVoiceBtn.addEventListener("click", deleteSelectedVoice);
 addAliasBtn.addEventListener("click", addAlias);
 
 voiceSelect.addEventListener("change", () => {
-  if (isRickVoice(voiceSelect.value) && !(voiceFile.files && voiceFile.files[0])) {
-    getRickSampleFile(voiceSelect.value).catch(() => {});
-  }
   loadAliases();
 });
 
